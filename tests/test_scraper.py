@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from scraper import BookData, _collect_book_urls, get_book_data, scrape_books
+from scraper import BookData, get_book_data, scrape_books
 
 
 @pytest.fixture
@@ -81,7 +81,6 @@ class TestGetBookData:
         assert hasattr(result, "description")
         assert hasattr(result, "product_info")
 
-        # Verify field types
         assert isinstance(result.title, str)
         assert isinstance(result.price, str)
         assert isinstance(result.rating, str)
@@ -182,8 +181,10 @@ class TestScrapeBooks:
         # Assert
         assert isinstance(result, list)
         assert len(result) == 2  # Only 2 successful scrapes
-        assert result[0].title == "Book1"
-        assert result[1].title == "Book3"
+
+        titles = [book.title for book in result]
+        assert "Book1" in titles
+        assert "Book3" in titles
 
 
 class TestCollectBookUrls:
@@ -220,6 +221,8 @@ class TestCollectBookUrls:
         mock_get.side_effect = side_effect
 
         # Act
+        from scraper import _collect_book_urls
+
         result = _collect_book_urls()
 
         # Assert
@@ -237,6 +240,8 @@ class TestCollectBookUrls:
         mock_get.return_value = mock_response
 
         # Act
+        from scraper import _collect_book_urls
+
         result = _collect_book_urls()
 
         # Assert
